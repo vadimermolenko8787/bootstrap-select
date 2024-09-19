@@ -2937,7 +2937,7 @@
       var that = this;
 
       this.$button.on('click.bs.dropdown.data-api', function () {
-        if (!that.$searchbox.val()) {
+        if (!!that.$searchbox.val()) {
           that.$searchbox.val('');
           that.selectpicker.search.previousValue = undefined;
         }
