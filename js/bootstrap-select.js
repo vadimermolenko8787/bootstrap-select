@@ -663,6 +663,61 @@
     TICKICON: 'glyphicon-ok'
   };
 
+  function rewriteClassNames () {
+
+    // if the version was not set successfully
+    if (!version.success) {
+      // try to retreive it again
+      try {
+        version.full = (getVersion() || '').split(' ')[0].split('.');
+      } catch (err) {
+        // fall back to use BootstrapVersion if set
+        if (Selectpicker.BootstrapVersion) {
+          version.full = Selectpicker.BootstrapVersion.split(' ')[0].split('.');
+        } else {
+          version.full = [version.major, '0', '0'];
+
+          console.warn(
+              'There was an issue retrieving Bootstrap\'s version. ' +
+              'Ensure Bootstrap is being loaded before bootstrap-select and there is no namespace collision. ' +
+              'If loading Bootstrap asynchronously, the version may need to be manually specified via $.fn.selectpicker.Constructor.BootstrapVersion.',
+              err
+          );
+        }
+      }
+
+      version.major = version.full[0];
+      version.success = true;
+    }
+
+    if (version.major >= '4') {
+      // some defaults need to be changed if using Bootstrap 4
+      // check to see if they have already been manually changed before forcing them to update
+      var toUpdate = [];
+
+      if (Selectpicker.DEFAULTS.style === classNames.BUTTONCLASS) toUpdate.push({ name: 'style', className: 'BUTTONCLASS' });
+      if (Selectpicker.DEFAULTS.iconBase === classNames.ICONBASE) toUpdate.push({ name: 'iconBase', className: 'ICONBASE' });
+      if (Selectpicker.DEFAULTS.tickIcon === classNames.TICKICON) toUpdate.push({ name: 'tickIcon', className: 'TICKICON' });
+
+
+      classNames.DIVIDER = 'dropdown-divider';
+      classNames.SHOW = 'show';
+      classNames.BUTTONCLASS = 'btn-light';
+      classNames.POPOVERHEADER = 'popover-header';
+      classNames.ICONBASE = '';
+      classNames.TICKICON = 'bs-ok-default';
+
+      for (var i = 0; i < toUpdate.length; i++) {
+        var option = toUpdate[i];
+        Selectpicker.DEFAULTS[option.name] = classNames[option.className];
+      }
+    }
+
+    if (version.major > '4') {
+      Selector.DATA_TOGGLE = 'data-bs-toggle="dropdown"';
+    }
+  }
+
   var Selector = {
     MENU: '.' + classNames.MENU,
     DATA_TOGGLE: 'data-toggle="dropdown"'
@@ -3153,6 +3208,9 @@
     },
 
     keydown: function (e) {
+
+      rewriteClassNames();
+
       var $this = $(this),
           isToggle = $this.hasClass('dropdown-toggle'),
           $parent = isToggle ? $this.closest('.dropdown') : $this.closest(Selector.MENU),
@@ -3456,56 +3514,7 @@
 
     [].shift.apply(args);
 
-    // if the version was not set successfully
-    if (!version.success) {
-      // try to retreive it again
-      try {
-        version.full = (getVersion() || '').split(' ')[0].split('.');
-      } catch (err) {
-        // fall back to use BootstrapVersion if set
-        if (Selectpicker.BootstrapVersion) {
-          version.full = Selectpicker.BootstrapVersion.split(' ')[0].split('.');
-        } else {
-          version.full = [version.major, '0', '0'];
-
-          console.warn(
-            'There was an issue retrieving Bootstrap\'s version. ' +
-            'Ensure Bootstrap is being loaded before bootstrap-select and there is no namespace collision. ' +
-            'If loading Bootstrap asynchronously, the version may need to be manually specified via $.fn.selectpicker.Constructor.BootstrapVersion.',
-            err
-          );
-        }
-      }
-
-      version.major = version.full[0];
-      version.success = true;
-    }
-
-    if (version.major >= '4') {
-      // some defaults need to be changed if using Bootstrap 4
-      // check to see if they have already been manually changed before forcing them to update
-      var toUpdate = [];
-
-      if (Selectpicker.DEFAULTS.style === classNames.BUTTONCLASS) toUpdate.push({ name: 'style', className: 'BUTTONCLASS' });
-      if (Selectpicker.DEFAULTS.iconBase === classNames.ICONBASE) toUpdate.push({ name: 'iconBase', className: 'ICONBASE' });
-      if (Selectpicker.DEFAULTS.tickIcon === classNames.TICKICON) toUpdate.push({ name: 'tickIcon', className: 'TICKICON' });
-
-      classNames.DIVIDER = 'dropdown-divider';
-      classNames.SHOW = 'show';
-      classNames.BUTTONCLASS = 'btn-light';
-      classNames.POPOVERHEADER = 'popover-header';
-      classNames.ICONBASE = '';
-      classNames.TICKICON = 'bs-ok-default';
-
-      for (var i = 0; i < toUpdate.length; i++) {
-        var option = toUpdate[i];
-        Selectpicker.DEFAULTS[option.name] = classNames[option.className];
-      }
-    }
-
-    if (version.major > '4') {
-      Selector.DATA_TOGGLE = 'data-bs-toggle="dropdown"';
-    }
+   rewriteClassNames();
 
     var value;
     var chain = this.each(function () {
