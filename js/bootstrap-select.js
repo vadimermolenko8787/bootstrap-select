@@ -1731,7 +1731,7 @@
             optID: config.optID
           });
         } else {
-          var liIndex = mainData.length + startLen,
+          var liIndex = mainData.length,
               cssText = dataGetter(item, 'style'),
               inlineStyle = cssText ? htmlEscape(cssText) : '',
               optionClass = (item.className || '') + (config.optgroupClass || '');
