@@ -2960,7 +2960,7 @@
     liveSearchListener: function () {
       var that = this;
 
-      this.$newElement.on('hide.bs.dropdown shown.bs.dropdown', function (e) {
+      this.$button.on('click.bs.dropdown.data-api', function () {
         if (!!that.$searchbox.val()) {
           that.$searchbox.val('');
           that.selectpicker.search.previousValue = undefined;
